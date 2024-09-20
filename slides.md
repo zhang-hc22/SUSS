@@ -179,7 +179,7 @@ transition: fade-out
 
 - After receive the ACK train: 
   - evaluate whether the exponential growth of _cwnd_ is extrapolated to persist for the next round
-  - if true, then send another $2 * c w n d_(i-1)$ this round → $G_i = 4$
+  - if true, then send another $2 * c w n d_{i-1}$ this round → $G_i = 4$
   - Why not consider more rounds? the network condition may vary over several upcoming rounds
 
 </div>
