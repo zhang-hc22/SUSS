@@ -28,9 +28,6 @@ mdc: true
 
 ## Mahdi Arghavani, Haibo Zhang, David Eyers, and Abbas Arghavani *SIGCOMM 2024*
 
-<!--
-The last comment block of each slide will be treated as slide notes. It will be visible and editable in Presenter Mode along with the slide. [Read more in the docs](https://sli.dev/guide/syntax.html#notes)
--->
 
 ---
 transition: fade-out
@@ -63,9 +60,6 @@ transition: fade-out
 
 </div>
 
-<!--
-Here is another comment.
--->
 
 ---
 transition: fade-out
@@ -261,12 +255,233 @@ $\Delta t_{i+1}^{a t} \le {m i n R T T}/{2}$
 </div>
 
 ---
+transition: fade-out
+---
+
+# Formulating Condition 2 for SUSS
+$m o R T T_{i+1} \le 1.125 * m i n R T T$
+
+<div v-click>
+
+- $1.125 * m i n R T T$ → initial signs of queueing delay → beginning of congestion
+
+</div>
+
+<div v-click>
+
+- suppose that $m i n R T T$ was last updated r rounds ago
+  - the average increase in queuing delay since then is approximately $\frac{m o R T T_i - m i n R T T}{r}$
+  - $m o R T T_{i+1} ≈ m o R T T_{i} + \frac{m o R T T_i - m i n R T T}{r}$
+
+</div>
+
+<div v-click>
+
+- **Condition 2**: $m o R T T_{i} + \frac{m o R T T_i - m i n R T T}{r} \le 1.125 * m i n R T T$
+
+</div>
+
+---
+transition: fade-out
+---
+
+# Key Challenge 2
+**How to control additional data packet transmission to avoid bursts and packet loss?**
+
+<div v-click>
+
+- Combination of ACK clocking and packet pacing when $G_i > 2$
+  - only ACK clocking → a burst of packets upon receiving each ACK train
+  - only packet pacing → the measurement of $\Delta t_i^{a t}$ will no longer be accurate
+
+</div>
+
+<div v-click>
+
+<img src="/fig6.png" style="margin: auto; max-width: 70%; max-height: 100%;">
+
+</div>
+
+<div v-click>
+
+- In _clocking period_, SUSS always sends twice the amount of data acknowledged by that ACK
+  - facilitate the measurement of $\Delta t_i^{a t}$
+- In _pacing period_, the remaining data will be sent at a predetermined pace to mitigate burstiness
+- _guard period_ → avoid interference with the clocking period in both the current and the next round
+
+</div>
+
+---
+transition: fade-out
+---
+
+<img src="/fig20.png" style="margin: auto; max-width: 85%; max-height: 100%;">
+
+
+---
+transition: fade-out
+---
+
+<img src="/fig6.png" style="margin: auto; max-width: 50%; max-height: 100%;">
+
+<img src="/fig8.png" style="margin: auto; max-width: 70%; max-height: 100%;">
+
+
+---
+layout: two-cols
+transition: fade-out
+---
+
+
+<img src="/fig9.png" style="margin: auto; max-width: 85%; max-height: 100%;">
+
+::right::
+
+<img src="/fig10.png" style="margin: auto; max-width: 83.2%; max-height: 100%;">
+
+
+---
+transition: fade-out
+---
+
+# Performance Evaluation
+- server deployment: Google server(BBR), Oracle server(CUBIC), both 3 servers located in different places
+- client deployment: SUSS on server, different kinds of clients in NZ or Sweden
+
+<div v-click>
+
+### Throughput
+
+<img src="/fig11.png" style="float: left; max-width: 45%; max-height: 100%;">
+
+<img src="/fig12.png" style="margin: auto; max-width: 45%; max-height: 100%;">
+
+</div>
+
+<div v-click>
+
+- CUBIC with SUSS exhibits a faster and smoother increase in cwnd and does not incur extra end-to-end delay
+- SUSS has brought substantial improvements
+  - SUSS can reach $c w n d^*$ more quickly than the traditional slow-start
+  - SUSS avoids overshooting cwnd and maintains the consistent delivery rate
+
+</div>
+
+---
+transition: fade-out
+---
+
+# Performance Evaluation
+FCT (Flow Complete Time)
+
+<div v-click>
+
+### Small Flow
+<img src="/fig13.png" style="margin: auto; max-width: 80%; max-height: 100%;">
+
+<img src="/fig14.png" style="margin: auto; max-width: 80%; max-height: 100%;">
+
+</div>
+
+<div v-click>
+
+- accelerating slow-start can yield significant gain for small flows
+  - as many small flows predominantly reside within the slow-start phase
+
+</div>
+
+---
+transition: fade-out
+---
+
+# Performance Evaluation
+FCT (Flow Complete Time)
+
+<div v-click>
+
+### Large Flow
+<img src="/fig15.png" style="margin: auto; max-width: 60%; max-height: 100%;">
+
+</div>
+
+<div v-click>
+
+- SUSS enhances the performance of small-sized flows, it does not increase cwnd beyond its optimal value, nor does it impact the FCT of larger flows
+
+</div>
+
+---
+transition: fade-out
+---
+
+# Performance Evaluation
+Packet Loss
+
+<div v-click>
+
+<img src="/fig16.png" style="margin: auto; max-width: 70%; max-height: 100%;">
+
+</div>
+
+<div v-click>
+
+- Pacing can significantly reduce packet density and thereby reduce the packet loss rate
+- It will converge when the size of flow increase
+
+</div>
+
+---
+transition: fade-out
+---
+
+# Performance Evaluation
+Fairness
+
+<div v-click>
+
+- $F = \frac{\sum (x_i)^2}{n * \sum (x_i^2)}$, n is the number of flows and $x_i$ is the goodput of the i-th flow → $F \rightarrow 1$, fairness $\uparrow$
+
+</div>
+
+<div v-click>
+
+<img src="/fig17.png" style="margin: auto; max-width: 60%; max-height: 100%;">
+
+</div>
+
+<div v-click>
+
+- when a level of fairness is achieved among the four flows, the fifth flow starts downloading
+- the initiation of the fifth flow results in an immediate decrease in the value of F , exhibiting a prolonged delay in approaching 1 when SUSS is off
+
+</div>
+
+---
+transition: fade-out
+---
+
+# Performance Evaluation
+Stability
+
+- A large flow facing the initiation of multiple concurrent small flows
+<div v-click>
+
+<img src="/fig18.png" style="margin: auto; max-width: 50%; max-height: 100%;">
+<img src="/fig19.png" style="margin: auto; max-width: 70%; max-height: 100%;">
+
+</div>
+
+<div v-click>
+
+- SUSS improves FCT of small CUBIC flows without compromising the stability of the large flow
+
+</div>
+
+---
 layout: center
 class: text-center
 ---
 
-# Learn More
+# Thanks for Listening
 
-[Documentation](https://sli.dev) · [GitHub](https://github.com/slidevjs/slidev) · [Showcases](https://sli.dev/resources/showcases)
-
-<PoweredBySlidev mt-10 />
+[Paper](https://dl.acm.org/doi/10.1145/3651890.3672234) · [GitHub](https://github.com/SUSSdeveloper/SUSS) · [Conference video](https://www.youtube.com/watch?v=-vXLobRg5xQ)
